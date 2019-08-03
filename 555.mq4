@@ -8,7 +8,7 @@
 #property version   "1.00"
 #property strict
 
-extern int lot = 1;
+int lot;
 float prevHigh;
 float prevLow;
 float buySignal;
@@ -49,12 +49,14 @@ void OnTick()
      sellSignal = ((prevHigh - prevLow) * 0.33) + prevLow;
    } while(buySignal - sellSignal < 2);
    
-   if(Close[0] >= buySignal && hasLong() == false) {
+   lot = (int)(AccountEquity() / 12000);
+   
+   if(Close[0] >= buySignal && hasLong() == false && Close[0] > iMA(NULL, 0, 10, 0, MODE_EMA, PRICE_MEDIAN, 0)) {
       closeAll();
       OrderSend(Symbol(), OP_BUY, lot, Ask, 999, 0, 0);
    }
    
-   else if(Close[0] <= sellSignal && hasShort() == false) {
+   else if(Close[0] <= sellSignal && hasShort() == false && Close[0] > iMA(NULL, 0, 10, 0, MODE_EMA, PRICE_MEDIAN, 0)) {
       closeAll();
       OrderSend(Symbol(), OP_SELL, lot, Ask, 999, 0, 0);
    }
